@@ -1,0 +1,35 @@
+.tweet-creator{
+    width: 500px;
+    height:250px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+#tweet-creation{
+    border:none;
+    height: 200px;
+    resize: none;
+}
+
+.bottom-section{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.bottom-section-error{
+    display: flex;
+    justify-content: space-between;
+}
+
+.error{
+    display: flex;
+    align-items: center;
+    background-color: #F9D7DA;
+    color: #91474D;
+    border-radius: 5px;
+    padding: 5px;
+}
+
