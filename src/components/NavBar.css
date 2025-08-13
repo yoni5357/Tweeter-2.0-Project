@@ -3,6 +3,16 @@
     margin: auto;
     background-color: #343A40;
     display: flex;
-    align-items: canter;
+    align-items: center;
     gap:20px;
+    padding: 1rem;
+}
+
+.link{
+    text-decoration: none;
+    color:white;
+}
+
+.link.active{
+    color:blue;
 }

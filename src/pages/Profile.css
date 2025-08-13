@@ -1,0 +1,16 @@
+.profile-container{
+    width:70%;
+    margin: auto;
+}
+.field-set{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.field-set > input{
+    height: 30px;
+    font-size: large;
+}
