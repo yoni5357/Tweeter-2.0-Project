@@ -4,16 +4,15 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import CreateTweet from './components/CreateTweet'
 import Tweet from './components/Tweet'
-import API_KEY from "../apiKey.js"
+import Profile from './pages/Profile.jsx'
+import { fetchTweets, postTweet } from './dataProvider.jsx'
 
 function App() {
   const [text, setText] = useState("");
   const [errorMessage, setErrorMessage] = useState("") ;
   const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [firstMount, setFirstMount] = useState(true);
-  const baseUrl = "https://uckmgdznnsnusvmyfvsb.supabase.co/rest/v1/Tweets?apikey="
-  const userName = "Rivka";
+  const [userName, setUserName] = useState("")
 
   const handleTextChange = (changedText) =>{
     setText(changedText)
@@ -28,10 +27,12 @@ function App() {
     let results;
     try{
       await postTweet({userName:userName, content:text, date:newDate.toLocaleString()});
+      setIsLoading(true);
       results = await fetchTweets();
     }catch(e){
-      return <div>Error:{e.message}</div>
+      return <div>Error:{e.message}</div> // TODO: make this work
     }
+    setIsLoading(false);
     setTweets(results.sort((a,b) => b.id-a.id));
     setText("");
   }
@@ -44,42 +45,26 @@ function App() {
           date={tweet.date}/>)
   }
 
-  async function postTweet(tweet){
-    const response = await fetch(baseUrl+API_KEY, {
-      method:'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(tweet)
-    })
-    if(!response.ok){
-      throw new Error("post response not ok")
-    }
-    setTweets(tweets.concat(tweet));
-  }
-
-  async function fetchTweets(){
-    setIsLoading(true);
-    const response = await fetch(baseUrl+API_KEY);
-    if(!response.ok){
-      throw new Error("get response not ok");
-    }
-    const results = response.json();
-    setIsLoading(false);
-    return results;
-  }
-
   useEffect(() => {
     const getData = async function(){
+      setIsLoading(true);
       const newTweets = await fetchTweets();
       newTweets.sort((a,b) => b.id-a.id)
+      setIsLoading(false);
       setTweets(newTweets)
     }
     getData();
+    setUserName(localStorage.getItem('userName'));
   },[])
+
+  const handleNameSave = (value) => {
+    localStorage.setItem('userName', value);
+    setUserName(value)
+  }
 
   return (
     <>
+      <Profile handleSave={handleNameSave}/>
       <CreateTweet text={text} handleChange={handleTextChange} errorMessage={errorMessage} submit={addTweet}/>
       {isLoading ? <div>Loading...</div> : renderTweets()}
     </>
