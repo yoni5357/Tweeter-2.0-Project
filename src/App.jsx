@@ -11,8 +11,9 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("") ;
   const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [firstMount, setFirstMount] = useState(true);
   const baseUrl = "https://uckmgdznnsnusvmyfvsb.supabase.co/rest/v1/Tweets?apikey="
-  const userName = "John";
+  const userName = "Rivka";
 
   const handleTextChange = (changedText) =>{
     setText(changedText)
@@ -22,9 +23,16 @@ function App() {
     else setErrorMessage("");
   }
 
-  const addTweet = () => {
+  const addTweet = async () => {
     const newDate = new Date;
-    postTweet({userName:userName, content:text, date:newDate.toLocaleString()});
+    let results;
+    try{
+      await postTweet({userName:userName, content:text, date:newDate.toLocaleString()});
+      results = await fetchTweets();
+    }catch(e){
+      return <div>Error:{e.message}</div>
+    }
+    setTweets(results.sort((a,b) => b.id-a.id));
     setText("");
   }
 
@@ -51,18 +59,20 @@ function App() {
   }
 
   async function fetchTweets(){
+    setIsLoading(true);
     const response = await fetch(baseUrl+API_KEY);
     if(!response.ok){
       throw new Error("get response not ok");
     }
     const results = response.json();
+    setIsLoading(false);
     return results;
   }
 
   useEffect(() => {
     const getData = async function(){
       const newTweets = await fetchTweets();
-      newTweets.sort((a,b) => b.date-a.date)
+      newTweets.sort((a,b) => b.id-a.id)
       setTweets(newTweets)
     }
     getData();
@@ -71,7 +81,7 @@ function App() {
   return (
     <>
       <CreateTweet text={text} handleChange={handleTextChange} errorMessage={errorMessage} submit={addTweet}/>
-      {renderTweets()}
+      {isLoading ? <div>Loading...</div> : renderTweets()}
     </>
   )
 }
