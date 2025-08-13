@@ -4,12 +4,14 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import CreateTweet from './components/CreateTweet'
 import Tweet from './components/Tweet'
+import API_KEY from "../apiKey.js"
 
 function App() {
   const [text, setText] = useState("");
   const [errorMessage, setErrorMessage] = useState("") ;
   const [tweets, setTweets] = useState([]);
-  const [firstMount, setFirstMount] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const baseUrl = "https://uckmgdznnsnusvmyfvsb.supabase.co/rest/v1/Tweets?apikey="
   const userName = "John";
 
   const handleTextChange = (changedText) =>{
@@ -21,7 +23,8 @@ function App() {
   }
 
   const addTweet = () => {
-    setTweets(tweets.concat({userName:userName, content:text, date:new Date}));
+    const newDate = new Date;
+    postTweet({userName:userName, content:text, date:newDate.toLocaleString()});
     setText("");
   }
 
@@ -33,15 +36,37 @@ function App() {
           date={tweet.date}/>)
   }
 
+  async function postTweet(tweet){
+    const response = await fetch(baseUrl+API_KEY, {
+      method:'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(tweet)
+    })
+    if(!response.ok){
+      throw new Error("post response not ok")
+    }
+    setTweets(tweets.concat(tweet));
+  }
+
+  async function fetchTweets(){
+    const response = await fetch(baseUrl+API_KEY);
+    if(!response.ok){
+      throw new Error("get response not ok");
+    }
+    const results = response.json();
+    return results;
+  }
+
   useEffect(() => {
-    if(firstMount && localStorage.getItem('tweets')){
-      setTweets(JSON.parse(localStorage.getItem('tweets')));
-      setFirstMount(false);
+    const getData = async function(){
+      const newTweets = await fetchTweets();
+      newTweets.sort((a,b) => b.date-a.date)
+      setTweets(newTweets)
     }
-    else{
-      localStorage.setItem('tweets', JSON.stringify(tweets));
-    }
-  },[tweets])
+    getData();
+  },[])
 
   return (
     <>
