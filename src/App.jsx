@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import CreateTweet from './components/CreateTweet'
 import Tweet from './components/Tweet'
 import Profile from './pages/Profile.jsx'
+import NavBar from './components/NavBar.jsx'
+import Home from './pages/Home.jsx'
+import { Routes,Route,BrowserRouter } from 'react-router'
 import { fetchTweets, postTweet } from './dataProvider.jsx'
 
 function App() {
@@ -63,11 +64,16 @@ function App() {
   }
 
   return (
-    <>
-      <Profile handleSave={handleNameSave}/>
-      <CreateTweet text={text} handleChange={handleTextChange} errorMessage={errorMessage} submit={addTweet}/>
-      {isLoading ? <div>Loading...</div> : renderTweets()}
-    </>
+    <BrowserRouter>
+      <NavBar/>
+      <Routes>
+        <Route path="/profile" element={<Profile handleSave={handleNameSave}/>}/>
+        <Route path="/home" element={<Home/>}/>
+        {/* <CreateTweet text={text} handleChange={handleTextChange} errorMessage={errorMessage} submit={addTweet}/>
+        {isLoading ? <div>Loading...</div> : renderTweets()} */}
+      </Routes>
+
+    </BrowserRouter>
   )
 }
 
