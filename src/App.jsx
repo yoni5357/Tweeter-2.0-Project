@@ -4,6 +4,7 @@ import Profile from './pages/Profile.jsx'
 import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
 import { Routes,Route,BrowserRouter } from 'react-router'
+import { TweetProvider } from './context/TweetContext.jsx'
 
 function App() {
   const [userName, setUserName] = useState("")
@@ -20,11 +21,12 @@ function App() {
   return (
     <BrowserRouter>
       <NavBar/>
-      <Routes>
-        <Route path="/profile" element={<Profile handleSave={handleNameSave}/>}/>
-        <Route path="/" element={<Home userName={userName}/>}/>
-      </Routes>
-
+      <TweetProvider>
+        <Routes>
+          <Route path="/profile" element={<Profile handleSave={handleNameSave}/>}/>
+          <Route path="/" element={<Home userName={userName}/>}/>
+        </Routes>
+      </TweetProvider>
     </BrowserRouter>
   )
 }

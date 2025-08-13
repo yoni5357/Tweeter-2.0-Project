@@ -1,16 +1,17 @@
 import Tweet from "../components/Tweet"
 import CreateTweet from "../components/CreateTweet"
 import { fetchTweets, postTweet } from '../dataProvider.jsx'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import "./Home.css"
+import { TweetContext } from "../context/TweetContext.jsx"
 
 
 
 export default function Home({userName}){
     const [text, setText] = useState("");
     const [errorMessage, setErrorMessage] = useState("") ;
-    const [tweets, setTweets] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const {tweets,setTweets} = useContext(TweetContext);
 
     const handleTextChange = (changedText) =>{
         setText(changedText)
