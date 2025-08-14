@@ -1,24 +1,21 @@
-import API_KEY from "../apiKey.js"
-const baseUrl = "https://uckmgdznnsnusvmyfvsb.supabase.co/rest/v1/Tweets?apikey="
+import { supabase } from "./supabase";
 
-export async function postTweet(tweet){
-    const response = await fetch(baseUrl+API_KEY, {
-        method:'POST',
-        headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(tweet)
-    })
-    if(!response.ok){
-        throw new Error("post response not ok")
-    }
+export async function postTweet(tweet) {
+  await supabase
+    .from("Tweets")
+    .insert([
+      { date: tweet.date, userName: tweet.userName, content: tweet.content },
+    ]);
 }
 
-export async function fetchTweets(){
-    const response = await fetch(baseUrl+API_KEY);
-    if(!response.ok){
-        throw new Error("get response not ok");
-    }
-    const results = response.json()
-    return results;
+export async function fetchTweets() {
+  const { data: tweets, error } = await supabase
+    .from("Tweets")
+    .select("*")
+    .order("date", { ascending: false })
+    .limit(20);
+  if (error) {
+    throw new Error("get response not ok");
+  }
+  return tweets;
 }

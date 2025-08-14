@@ -25,11 +25,15 @@ export default function Home({userName}){
         const newDate = new Date;
         let results;
         try{
-        await postTweet({userName:userName, content:text, date:newDate.toLocaleString()});
-        setIsLoading(true);
-        results = await fetchTweets();
+            if(!userName){
+                alert("User Name cannot be null, please login in the profile page");
+                return
+            }
+            await postTweet({userName:userName, content:text, date:newDate.toLocaleString()});
+            setIsLoading(true);
+            results = await fetchTweets();
         }catch(e){
-        return <div>Error:{e.message}</div> // TODO: make this work
+            return <div>Error:{e.message}</div> // TODO: make this work
         }
         setIsLoading(false);
         setTweets(results.sort((a,b) => b.id-a.id));
