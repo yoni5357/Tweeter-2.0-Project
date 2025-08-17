@@ -3,15 +3,22 @@ import './App.css'
 import Profile from './pages/Profile.jsx'
 import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
-import { Routes,Route,BrowserRouter } from 'react-router'
+import Login from './pages/Login.jsx'
+import { Routes,Route,BrowserRouter, useNavigate } from 'react-router'
 import { TweetProvider } from './context/TweetContext.jsx'
+import ProtectedRoute from './auth/ProtectedRoute.jsx'
+import { AuthProvider } from './auth/AuthProvider.jsx'
 
 function App() {
   const [userName, setUserName] = useState("")
+  const navigate = useNavigate();
 
   const handleNameSave = (value) => {
     localStorage.setItem('userName', value);
     setUserName(value)
+    if(value){
+      navigate("/");
+    }
   }
 
   useEffect(() => {
@@ -19,15 +26,24 @@ function App() {
   },[])
 
   return (
-    <BrowserRouter>
+    <AuthProvider>
       <NavBar/>
       <TweetProvider>
         <Routes>
-          <Route path="/profile" element={<Profile handleSave={handleNameSave}/>}/>
-          <Route path="/" element={<Home userName={userName}/>}/>
+          <Route path="/login" element={<Login/>} />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+            <Profile handleSave={handleNameSave}/>
+            </ProtectedRoute>
+            }/>
+          <Route path="/" element={
+            <ProtectedRoute>
+            <Home userName={userName}/>
+            </ProtectedRoute>}/>
+          <Route path="*" element={<Login />} />
         </Routes>
       </TweetProvider>
-    </BrowserRouter>
+    </AuthProvider>
   )
 }
 

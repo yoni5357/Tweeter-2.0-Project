@@ -16,3 +16,15 @@
 .link.active{
     color:blue;
 }
+
+#sec-to-last{
+    flex: 1;
+}
+
+#last{
+    cursor: pointer;
+}
+
+#last.active{
+    color: white;
+}
